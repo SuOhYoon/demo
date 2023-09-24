@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.CategoryDAO">
+    <!-- 모든 카테고리 가져오는 쿼리 -->
+    <select id="selectcategory" resultType="com.example.demo.entity.Category">
+        WITH RECURSIVE category_hierarchy AS (
+            SELECT
+                id,
+                name,
+                parent_id,
+                0 AS level,
+                CAST(id AS CHAR(200)) AS path
+            FROM
+                test.category
+            WHERE
+                parent_id IS NULL
+            UNION ALL
+            SELECT
+                c.id,
+                c.name,
+                c.parent_id,
+                ch.level + 1,
+                CONCAT(ch.path, '->', c.id)
+            FROM
+                test.category AS c
+                    JOIN
+                category_hierarchy AS ch
+                ON
+                    c.parent_id = ch.id
+        )
+        SELECT
+            id,
+            name
+        FROM
+            category_hierarchy
+        ORDER BY
+            path;
+    </select>
+</mapper>
