@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.dao.CategoryDAO">
     <!-- 모든 카테고리 가져오는 쿼리 -->
-    <select id="selectcategory" resultType="com.example.demo.entity.Category">
+    <!-- <select id="selectcategory" resultType="com.example.demo.entity.Category">
         WITH RECURSIVE category_hierarchy AS (
             SELECT
                 id,
@@ -35,5 +35,30 @@
             category_hierarchy
         ORDER BY
             path;
+    </select> -->
+    <select id="findAll" resultType="com.example.demo.entity.Category">
+        SELECT id, name, parent_id FROM category;
+    </select>
+
+    <select id="findById" resultType="com.example.demo.entity.Category">
+        SELECT
+            id,
+            name,
+            parent_id
+        FROM
+            category
+        WHERE
+            id = #{id}
+    </select>
+
+    <select id="findByParentId" resultType="com.example.demo.entity.Category">
+        SELECT
+            id,
+            name,
+            parent_id
+        FROM
+            category
+        WHERE
+            parent_id = #{parentId}
     </select>
 </mapper>

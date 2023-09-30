@@ -2,40 +2,74 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Category;
 import com.example.demo.service.CategoryService;
+// import lombok.AllArgsConstructor;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
+import lombok.RequiredArgsConstructor;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
-@Controller
+@RestController
 @AllArgsConstructor
 public class CategoryController {
     private final CategoryService service;
     @GetMapping("/")
-    public String getAllCategories(Model model) {
-        List<Category> categories = service.selectcategory();
-
-        // 계층 구조를 구성하기 위한 처리
-        List<Category> hierarchicalCategories = buildHierarchy(categories, null, 0);
-
-        model.addAttribute("categories", hierarchicalCategories);
-        return "test";
-    }
-
-    private List<Category> buildHierarchy(List<Category> categories, Integer parentId, int level) {
-        List<Category> hierarchicalCategories = new ArrayList<>();
-
-        for (Category category : categories) {
-            if (Objects.equals(category.getParent_id(), parentId)) {
-                category.setLevel(level);
-                category.setChildren(buildHierarchy(categories, category.getId(), level + 1));
-                hierarchicalCategories.add(category);
+    public List<Map<String, Object>> displayData(Model model) {
+        int count = 0;
+        int ccount = 0;
+        List<Category> dblist = service.findAll();
+        // 서비스에서 가져온 부모 리스트의 이름을 새로운 리스트로 저장
+        List<Category> parent = new ArrayList<>();
+        List<Category> child = new ArrayList<>();
+        for (Category item : dblist) {
+            if (item.getParent_id() == null) {
+                parent.add(item); // parent_id가 없는 경우 parent 리스트에 추가
+            } else {
+                child.add(item); // parent_id가 있는 경우 child 리스트에 추가
             }
         }
 
-        return hierarchicalCategories;
+        // parent 카테고리 출력
+        System.out.println("Parent Categories:");
+        for (Category item : parent) {
+            System.out.print(parent);
+        }
+
+        // child 카테고리 출력
+        System.out.println("\nChild Categories:");
+        for (Category item : child) {
+            System.out.print(child);
+        }
+        // 서비스에서 가져온 자식 리스트의 이름을 새로운 리스트로 저장
+        // 서비스에서 가져온 값 리스트의 이름을 새로운 리스트로 저장
+        // JSON 데이터 생성
+        List<Map<String, Object>> jsonData = new ArrayList<>();
+
+        // 데이터 생성
+        int i = 0;
+        for (Category key : parent) {
+            Map<String, Object> data = new HashMap<>();
+            List<Map<String, List<String>>> dataList = new ArrayList<>();
+
+            for (Category item : child) {
+                Map<String, List<String>> subData = new HashMap<>();
+                List<String> values = new ArrayList<>();
+                values.add(item.getName() + i);
+
+                subData.put(item.getName(), values);
+                dataList.add(subData);
+            }
+
+            data.put(String.valueOf(key.getName()), dataList);
+            jsonData.add(data);
+            i++;
+        }
+
+        // JSON 데이터를 모델에 추가
+        model.addAttribute("jsonData", jsonData);
+
+        return jsonData;
     }
 }
