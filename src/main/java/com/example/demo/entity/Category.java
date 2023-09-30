@@ -9,19 +9,9 @@ import java.util.List;
 @Getter
 @Setter
 public class Category {
-    private int id;
+    private int idx;
+    private String id;
     private String name;
-    private Integer parent_id;
-    private
+    private String parent_id;
     private List<Category> children;
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", parentId=" + parent_id +
-                ", children=" + children +
-                '}';
-    }
 }

@@ -1,22 +1,46 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>JSON Display</title>
+    <title>Category Data</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-<h1>JSON Data Display</h1>
+<ul>
+    <li th:each="category : ${jsonData}">
+        <span th:text="${category.name}" class="category-toggle"></span>
+        <ul class="hidden">
+            <li th:each="child : ${category.children}">
+                <span th:text="${child.name}" class="category-toggle"></span>
+                <ul class="hidden">
+                    <li th:each="lastChild : ${child.children}">
+                        <a th:href="null" th:text="${lastChild.name}"></a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
 
-<div th:each="entry : ${jsonData}">
-    <h2 th:text="${entry.keySet().toArray()[0]}"></h2>
-    <ul th:each="item : ${entry.values().toArray()[0]}">
-        <li th:each="subEntry : ${item}">
-            <strong th:text="${subEntry.keySet().toArray()[0]}"></strong>
-            <ul th:each="value : ${subEntry.values().toArray()[0]}">
-                <li th:text="${value}"></li>
-            </ul>
-        </li>
-    </ul>
-</div>
+<script>
+    // JavaScript 코드
+    var toggleButtons = document.querySelectorAll('.category-toggle');
+
+    toggleButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var parentUl = button.parentElement.querySelector('ul');
+            if (parentUl) {
+                if (parentUl.classList.contains('hidden')) {
+                    parentUl.classList.remove('hidden');
+                } else {
+                    parentUl.classList.add('hidden');
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>
